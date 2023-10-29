@@ -31,7 +31,7 @@ public class WorkspaceService {
 				.findById(workspaceId)
 				.orElseThrow(() -> new DataNotFoundException("Workspace não encontrado."));
 
-		return WorkspaceMapper.toDTO(workspace);
+		return workspaceMapper.toDTO(workspace);
 	}
 
 	public WorkspaceDTO alterar(WorkspaceDTO workspace, UUID id){
