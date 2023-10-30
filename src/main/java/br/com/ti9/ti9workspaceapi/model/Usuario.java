@@ -13,7 +13,6 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "usuario")
@@ -36,20 +35,5 @@ public class Usuario {
     @NotNull
     @NotBlank
     private String email;
-
-    private String telefone;
-
-    @NotNull
-    @NotBlank
-    private String senha;
-
-    private LocalDateTime atualizadoEm;
-    private LocalDateTime encerradoEm;
-
-    @NotNull
-    private String status = "ativo";
-
-    @OneToMany(mappedBy = "usuario")
-    private List<UsuarioWorkspace> usuarioWorkspaceList = new ArrayList<>();
 
 }
