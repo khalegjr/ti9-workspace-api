@@ -12,5 +12,4 @@ import lombok.Setter;
 public class WorkspaceDTO {
 
     private String nome;
-    private String uri;
 }

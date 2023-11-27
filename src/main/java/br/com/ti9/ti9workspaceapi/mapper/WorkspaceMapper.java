@@ -12,8 +12,16 @@ public class WorkspaceMapper {
         WorkspaceDTO workspaceDTO = new WorkspaceDTO();
 
         workspaceDTO.setNome(workspace.getNome());
-        workspaceDTO.setUri(workspace.getUri());
 
         return workspaceDTO;
+    }
+
+    public Workspace toWorkspace(WorkspaceDTO workspaceDTO) {
+
+        Workspace workspace = new Workspace();
+
+        workspace.setNome(workspace.getNome());
+
+        return workspace;
     }
 }

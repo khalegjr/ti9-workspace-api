@@ -1,6 +1,10 @@
 package br.com.ti9.ti9workspaceapi.controller;
 
 import br.com.ti9.ti9workspaceapi.dto.WorkspaceDTO;
+import br.com.ti9.ti9workspaceapi.service.WorkspaceService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,30 +12,38 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/workspace/v1")
+@RequiredArgsConstructor
 public class WorkspaceController {
+
+    private final WorkspaceService workspaceService;
 
     @GetMapping("/")
     public String todos(){
+
         return "Retorna todos os workspaces do usuário";
     }
 
-    @GetMapping("/{id}")
-    public String buscar(@PathVariable UUID id){
-        return "Retorna o workspace " + id;
+    @GetMapping("/{workspaceId}")
+    public ResponseEntity<WorkspaceDTO> buscar(@PathVariable UUID workspaceId){
+        WorkspaceDTO workspace = workspaceService.buscar(workspaceId);
+
+        return new ResponseEntity<>(workspace, HttpStatus.OK);
     }
 
     @PostMapping("/")
-    public String registrar(@Validated @RequestBody WorkspaceDTO workspace){
-        return "Cria um workspace";
+    public ResponseEntity<String> registrar(@Validated @RequestBody WorkspaceDTO workspace){
+
+        return new ResponseEntity<>(workspaceService.salvar(workspace), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public String alterar(@PathVariable UUID id, @RequestBody WorkspaceDTO workspaceDTO) {
-        return "Altera um workspace";
+    // TODO: está alterando com o status 'inativo', verificar isso
+    @PutMapping("/{workspaceId}")
+    public ResponseEntity<WorkspaceDTO> alterar(@Validated @RequestBody WorkspaceDTO workspaceDTO, @PathVariable UUID workspaceId) {
+        return new ResponseEntity<>(workspaceService.alterar(workspaceDTO, workspaceId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public String desativar(@PathVariable UUID id) {
-        return "Desativa um workspace";
+    @DeleteMapping("/{workspaceId}")
+    public ResponseEntity<String> desativar(@PathVariable UUID workspaceId) {
+        return new ResponseEntity<>(workspaceService.encerrar(workspaceId), HttpStatus.NO_CONTENT);
     }
 }

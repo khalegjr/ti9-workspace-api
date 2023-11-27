@@ -1,52 +1,74 @@
 package br.com.ti9.ti9workspaceapi.model;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.NaturalIdCache;
 
-@Entity
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
+@Entity(name = "Workspace")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "workspace")
-public class Workspace {
+@NaturalIdCache
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class Workspace extends Model {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Setter(AccessLevel.NONE)
     private UUID id;
 
     @NotNull
-    @NotBlank
     private String nome;
 
-    @NotNull
-    @NotBlank
-    private String uri;
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            }
+    )
+//    @JoinTable(name = "usuario_workspace",
+//            joinColumns = { @JoinColumn(name = "workspace_id") },
+//            inverseJoinColumns = { @JoinColumn(name = "usuario_id") }
+//    )
+    private Set<UsuarioWorkspace> usuarios = new HashSet<>();
 
-    private LocalDateTime atualizadoEm;
-    private LocalDateTime encerradoEm;
+    public Workspace(String nome) {
+        this.nome = nome;
+    }
 
-    @NotNull
-    private String status = "ativo";
+    public void addUsuario(Usuario usuario) {
+        UsuarioWorkspace usuarioWorkspace = new UsuarioWorkspace(usuario, this);
+        usuarios.add(usuarioWorkspace);
+    }
 
-    @OneToMany(mappedBy = "workspace")
-    private List<UsuarioWorkspace> usuarioWorkspaceList = new ArrayList<>();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Workspace that = (Workspace) o;
+        return Objects.equals(nome, that.nome) &&
+                Objects.equals(criadoEm, that.criadoEm) &&
+                Objects.equals(atualizadoEm, that.atualizadoEm) &&
+                Objects.equals(encerradoEm, that.encerradoEm) &&
+                Objects.equals(status, that.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nome, status, criadoEm);
+    }
 }
